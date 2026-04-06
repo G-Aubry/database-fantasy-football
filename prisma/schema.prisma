@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model league {
+  league_id         Int                 @id @default(autoincrement())
+  league_name       String              @db.VarChar(40)
+  max_teams         Int                 @default(12)
+  max_roster_size   Int                 @default(15)
+  scoring_type      league_scoring_type @default(Standard)
+  rosters           rosters[]
+  teams             teams[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model player_stats {
+  player_id           Int
+  week_number         Int
+  passing_yards       Int?    @default(0)
+  rushing_yards       Int?    @default(0)
+  receiving_yards     Int?    @default(0)
+  receptions          Int?    @default(0)
+  touchdowns          Int?    @default(0)
+  field_goals_made    Int?    @default(0)
+  fg_missed           Int?    @default(0)
+  fg_blocked_by_def   Int?    @default(0)
+  interceptions       Int?    @default(0)
+  fumbles_lost        Int?    @default(0)
+  fumbles_recovered   Int?    @default(0)
+  sacks               Int?    @default(0)
+  players             players @relation(fields: [player_id], references: [player_id], onDelete: Cascade, onUpdate: NoAction, map: "player_stats_ibfk_1")
+  league_player_score league_player_score[]
+
+  @@id([player_id, week_number])
+  @@index([player_id], map: "player_id")
+}
+
+model players {
+  player_id       Int                     @id @default(autoincrement())
+  first_name      String                  @db.VarChar(20)
+  last_name       String                  @db.VarChar(20)
+  player_position players_player_position
+  nfl_team        String?                 @db.VarChar(20)
+  total_points    Decimal?                @default(0.00) @db.Decimal(6, 2)
+  is_injured      Boolean?                @default(false)
+  player_stats    player_stats[]
+  rosters         rosters[]
+}
+
+model rosters {
+  roster_id Int             @id @default(autoincrement())
+  team_id   Int
+  player_id Int
+  league_id Int
+  status    rosters_status? @default(Bench)
+  teams     teams           @relation(fields: [team_id], references: [team_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_team_rosters")
+  players   players         @relation(fields: [player_id], references: [player_id], onDelete: NoAction, onUpdate: NoAction, map: "rosters_ibfk_2")
+  league    league          @relation(fields: [league_id], references: [league_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_league_rosters")
+
+  @@unique([league_id, player_id], map: "league_id")
+  @@index([player_id], map: "player_id")
+  @@index([team_id], map: "team_id")
+}
+
+model teams {
+  team_id   Int       @id @default(autoincrement())
+  league_id Int?
+  team_name String    @db.VarChar(50)
+  owner_id  Int?
+  rosters   rosters[]
+  league    league?   @relation(fields: [league_id], references: [league_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_league_teams")
+  users     users?    @relation(fields: [owner_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "teams_ibfk_2")
+
+  @@index([league_id], map: "league_id")
+  @@index([owner_id], map: "owner_id")
+}
+
+model users {
+  user_id       Int     @id @default(autoincrement())
+  username      String  @unique(map: "username") @db.VarChar(15)
+  password_hash String  @db.VarChar(255)
+  email         String  @unique(map: "email") @db.VarChar(30)
+  teams         teams[]
+}
+
+model league_player_score {
+  league_id    Int
+  player_id    Int
+  week_number  Int
+  calculated_points Decimal? @db.Decimal(5, 2)
+  player_stats player_stats @relation(fields: [player_id, week_number], references: [player_id, week_number], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([league_id, player_id, week_number])
+}
+
+enum league_scoring_type {
+  PPR
+  Half_PPR @map("Half PPR")
+  Standard
+}
+
+enum players_player_position {
+  QB
+  RB
+  WR
+  TE
+  K
+  DEF
+}
+
+enum rosters_status {
+  Starter
+  Bench
+}
