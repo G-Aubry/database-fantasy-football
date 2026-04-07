@@ -19,6 +19,12 @@ export async function POST(request: Request) {
     // Verify user owns the team
     const team = await prisma.teams.findUnique({
       where: { team_id },
+      include: {
+        league: true,
+        _count: {
+          select: { rosters: true }
+        }
+      }
     })
 
     if (!team || team.owner_id !== parseInt(session.user.id)) {
@@ -26,16 +32,26 @@ export async function POST(request: Request) {
     }
 
     if (action === 'pickUp') {
-      // Check if player already on roster
+      if (!team.league) {
+        return Response.json({ error: 'Team does not belong to a league' }, { status: 400 })
+      }
+
+      if (team._count.rosters >= team.league.max_roster_size) {
+        return Response.json({ 
+          error: `Roster is full (Max: ${team.league.max_roster_size} players). Please drop a player first.` 
+        }, { status: 400 })
+      }
+
+      // Check if player already on any roster in this league
       const existingRoster = await prisma.rosters.findFirst({
         where: {
-          team_id,
+          league_id,
           player_id,
         },
       })
 
       if (existingRoster) {
-        return Response.json({ error: 'Player already on roster' }, { status: 400 })
+        return Response.json({ error: 'Player is already on a roster in this league' }, { status: 400 })
       }
 
       // Add player to bench

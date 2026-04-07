@@ -77,7 +77,23 @@ export default async function LeaguePage({ params }: Props) {
         <p><strong>Max Roster Size:</strong> {league.max_roster_size}</p>
       </div>
 
-      <JoinLeagueButton league={buttonLeague} teams={buttonTeams} userId={session?.user?.id} />
+      <div style={{ display: 'flex', gap: '15px', alignItems: 'center', marginBottom: '30px' }}>
+        <JoinLeagueButton league={buttonLeague} teams={buttonTeams} userId={session?.user?.id} />
+        <Link 
+          href={`/league/${league_id}/freeagency`}
+          style={{
+            padding: '10px 15px',
+            backgroundColor: '#17a2b8',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '4px',
+            fontWeight: 'bold',
+            fontSize: '14px'
+          }}
+        >
+          Free Agency Pool
+        </Link>
+      </div>
 
       <h2>Teams ({league.teams.length})</h2>
       {league.teams.length === 0 ? (
