@@ -24,9 +24,10 @@ interface RosterTableProps {
   leagueId: number
   playerPoints: Record<number, number>
   title: string
+  isStartingLineup?: boolean
 }
 
-export default function RosterTable({ rosters, isOwner, teamId, leagueId, playerPoints, title }: RosterTableProps) {
+export default function RosterTable({ rosters, isOwner, teamId, leagueId, playerPoints, title, isStartingLineup }: RosterTableProps) {
   const [loading, setLoading] = useState<number | null>(null)
   const [error, setError] = useState('')
 
@@ -86,7 +87,37 @@ export default function RosterTable({ rosters, isOwner, teamId, leagueId, player
     }
   }
 
-  if (rosters.length === 0) {
+  const STARTER_SLOTS = ['QB', 'RB', 'RB', 'WR', 'WR', 'TE', 'FLEX', 'DEF', 'K']
+
+  let rowsToRender: { slot?: string; roster?: Roster }[] = []
+
+  if (isStartingLineup) {
+    const availablePlayers = [...rosters]
+    const takePlayer = (condition: (p: Roster) => boolean) => {
+      const index = availablePlayers.findIndex(condition)
+      if (index !== -1) {
+        return availablePlayers.splice(index, 1)[0]
+      }
+      return undefined
+    }
+
+    STARTER_SLOTS.forEach(slot => {
+      if (slot === 'FLEX') {
+        rowsToRender.push({ slot, roster: takePlayer(p => ['RB', 'WR', 'TE'].includes(p.players.player_position)) })
+      } else {
+        rowsToRender.push({ slot, roster: takePlayer(p => p.players.player_position === slot) })
+      }
+    })
+
+    // If somehow there are extra starting players that don't fit the valid slots, append them safely
+    availablePlayers.forEach(p => {
+      rowsToRender.push({ slot: 'EXTRA', roster: p })
+    })
+  } else {
+    rowsToRender = rosters.map(r => ({ roster: r }))
+  }
+
+  if (!isStartingLineup && rosters.length === 0) {
     return <p style={{ color: '#999' }}>No players in {title.toLowerCase()}</p>
   }
 
@@ -96,6 +127,7 @@ export default function RosterTable({ rosters, isOwner, teamId, leagueId, player
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '30px' }}>
         <thead>
           <tr style={{ backgroundColor: '#f5f5f5', borderBottom: '2px solid #ddd' }}>
+            {isStartingLineup && <th style={{ padding: '10px', textAlign: 'left' }}>Slot</th>}
             <th style={{ padding: '10px', textAlign: 'left' }}>Player</th>
             <th style={{ padding: '10px', textAlign: 'left' }}>Position</th>
             <th style={{ padding: '10px', textAlign: 'left' }}>NFL Team</th>
@@ -104,23 +136,72 @@ export default function RosterTable({ rosters, isOwner, teamId, leagueId, player
           </tr>
         </thead>
         <tbody>
-          {rosters.map(roster => (
-            <tr key={roster.roster_id} style={{ borderBottom: '1px solid #eee' }}>
-              <td style={{ padding: '10px' }}>
-                {roster.players.first_name} {roster.players.last_name}
-              </td>
-              <td style={{ padding: '10px' }}>{roster.players.player_position}</td>
-              <td style={{ padding: '10px' }}>{roster.players.nfl_team || 'N/A'}</td>
-              <td style={{ padding: '10px' }}>{(playerPoints[roster.players.player_id] || 0).toFixed(2)}</td>
-              {isOwner && (
-                <td style={{ padding: '10px', display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                  {roster.status === 'Bench' && (
+          {rowsToRender.map((row, index) => {
+            if (!row.roster) {
+              return (
+                <tr key={`empty-${index}`} style={{ borderBottom: '1px solid #eee', backgroundColor: '#fafafa' }}>
+                  {isStartingLineup && <td style={{ padding: '10px', fontWeight: 'bold', color: '#666' }}>{row.slot}</td>}
+                  <td style={{ padding: '10px', color: '#999', fontStyle: 'italic' }}>Empty</td>
+                  <td style={{ padding: '10px' }}>-</td>
+                  <td style={{ padding: '10px' }}>-</td>
+                  <td style={{ padding: '10px' }}>-</td>
+                  {isOwner && <td style={{ padding: '10px' }}>-</td>}
+                </tr>
+              )
+            }
+
+            const roster = row.roster
+            return (
+              <tr key={roster.roster_id} style={{ borderBottom: '1px solid #eee' }}>
+                {isStartingLineup && <td style={{ padding: '10px', fontWeight: 'bold' }}>{row.slot}</td>}
+                <td style={{ padding: '10px' }}>
+                  {roster.players.first_name} {roster.players.last_name}
+                </td>
+                <td style={{ padding: '10px' }}>{roster.players.player_position}</td>
+                <td style={{ padding: '10px' }}>{roster.players.nfl_team || 'N/A'}</td>
+                <td style={{ padding: '10px' }}>{(playerPoints[roster.players.player_id] || 0).toFixed(2)}</td>
+                {isOwner && (
+                  <td style={{ padding: '10px', display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                    {roster.status === 'Bench' && (
+                      <button
+                        onClick={() => handleStatusChange(roster.roster_id, 'Starter')}
+                        disabled={loading === roster.roster_id}
+                        style={{
+                          padding: '5px 10px',
+                          backgroundColor: '#28a745',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: loading === roster.roster_id ? 'not-allowed' : 'pointer',
+                          fontSize: '12px',
+                        }}
+                      >
+                        Start
+                      </button>
+                    )}
+                    {roster.status === 'Starter' && (
+                      <button
+                        onClick={() => handleStatusChange(roster.roster_id, 'Bench')}
+                        disabled={loading === roster.roster_id}
+                        style={{
+                          padding: '5px 10px',
+                          backgroundColor: '#ffc107',
+                          color: 'black',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: loading === roster.roster_id ? 'not-allowed' : 'pointer',
+                          fontSize: '12px',
+                        }}
+                      >
+                        Bench
+                      </button>
+                    )}
                     <button
-                      onClick={() => handleStatusChange(roster.roster_id, 'Starter')}
+                      onClick={() => handleDropPlayer(roster.roster_id, roster.players.player_id)}
                       disabled={loading === roster.roster_id}
                       style={{
                         padding: '5px 10px',
-                        backgroundColor: '#28a745',
+                        backgroundColor: '#dc3545',
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
@@ -128,45 +209,13 @@ export default function RosterTable({ rosters, isOwner, teamId, leagueId, player
                         fontSize: '12px',
                       }}
                     >
-                      Start
+                      Drop
                     </button>
-                  )}
-                  {roster.status === 'Starter' && (
-                    <button
-                      onClick={() => handleStatusChange(roster.roster_id, 'Bench')}
-                      disabled={loading === roster.roster_id}
-                      style={{
-                        padding: '5px 10px',
-                        backgroundColor: '#ffc107',
-                        color: 'black',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: loading === roster.roster_id ? 'not-allowed' : 'pointer',
-                        fontSize: '12px',
-                      }}
-                    >
-                      Bench
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleDropPlayer(roster.roster_id, roster.players.player_id)}
-                    disabled={loading === roster.roster_id}
-                    style={{
-                      padding: '5px 10px',
-                      backgroundColor: '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: loading === roster.roster_id ? 'not-allowed' : 'pointer',
-                      fontSize: '12px',
-                    }}
-                  >
-                    Drop
-                  </button>
-                </td>
-              )}
-            </tr>
-          ))}
+                  </td>
+                )}
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </div>

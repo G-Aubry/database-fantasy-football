@@ -66,9 +66,33 @@ export const authOptions: NextAuthOptions = {
   },
   session: {
     strategy: 'jwt',
+    maxAge: 1 * 60 * 60, // 1 hour
   },
   secret: process.env.NEXTAUTH_SECRET,
 }
 
-const handler = NextAuth(authOptions)
-export { handler as GET, handler as POST }
+import { cookies } from 'next/headers'
+import { NextRequest } from 'next/server'
+
+async function auth(req: NextRequest, ctx: any) {
+  const cookieStore = await cookies()
+  const rememberMe = cookieStore.get('rememberMe')?.value === 'true'
+
+  const useSecureCookies = req.nextUrl?.protocol === 'https:' || process.env.NODE_ENV === 'production'
+  const cookiePrefix = useSecureCookies ? '__Secure-' : ''
+  const sessionTokenName = `${cookiePrefix}next-auth.session-token`
+
+  const customAuthOptions: NextAuthOptions = {
+    ...authOptions,
+    session: {
+      strategy: 'jwt',
+      maxAge: rememberMe ? 30 * 24 * 60 * 60 : 60 * 60, // 30 days or 1 hour idle timeout
+      updateAge: rememberMe ? undefined : 15 * 60, //Update session every 15 minutes
+    },
+  }
+
+  const handler = NextAuth(customAuthOptions)
+  return handler(req as any, ctx)
+}
+
+export { auth as GET, auth as POST }

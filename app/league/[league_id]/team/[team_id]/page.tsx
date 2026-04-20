@@ -92,6 +92,7 @@ export default async function TeamRosterPage({ params }: Props) {
         leagueId={leagueId}
         playerPoints={playerPoints}
         title="Starting Lineup"
+        isStartingLineup={true}
       />
 
       <h2>Bench ({benchPlayers.length})</h2>

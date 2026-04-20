@@ -8,6 +8,7 @@ import Link from 'next/link'
 export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -16,6 +17,9 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
+
+    // Set cookie for NextAuth route to pick up dynamically
+    document.cookie = `rememberMe=${rememberMe}; path=/; max-age=60`
 
     try {
       const result = await signIn('credentials', {
@@ -82,6 +86,16 @@ export default function LoginPage() {
               boxSizing: 'border-box',
             }}
           />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <input
+            id="rememberMe"
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          <label htmlFor="rememberMe">Remember me</label>
         </div>
 
         {error && <p style={{ color: '#d32f2f', fontSize: '14px' }}>{error}</p>}
