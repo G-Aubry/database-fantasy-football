@@ -20,29 +20,29 @@ export const authOptions: NextAuthOptions = {
         username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials: Record<string, unknown> | undefined) {
+      async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          throw new Error('Invalid credentials')
+          throw new Error('Invalid credentials');
         }
-
-        const user = await prisma.users.findUnique({
-          where: { username: credentials.username as string },
-        })
-
-        if (!user) {
-          throw new Error('User not found')
-        }
-
-        const isPasswordValid = await compare(credentials.password as string, user.password_hash)
-
-        if (!isPasswordValid) {
-          throw new Error('Invalid password')
-        }
-
-        return {
-          id: user.user_id.toString(),
-          name: user.username,
-          email: user.email,
+        try {
+          const user = await prisma.users.findUnique({
+            where: { username: credentials.username as string },
+          });
+          if (!user) {
+            throw new Error('Invalid credentials'); 
+          }
+          const isPasswordValid = await compare(credentials.password as string, user.password_hash);
+          if (!isPasswordValid) {
+            throw new Error('Invalid credentials');
+          }
+          return {
+            id: user.user_id.toString(),
+            name: user.username,
+            email: user.email,
+          };
+        } catch (error: any) {
+          console.error("AUTH_DATABASE_ERROR:", error.message);
+          throw new Error('Authentication service is currently unavailable.');
         }
       },
     }),
