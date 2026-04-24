@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Link from 'next/link'
 
 interface Player {
   player_id: number
@@ -137,7 +138,12 @@ export default function FreeAgencyTable({ players, userTeamId, leagueId }: FreeA
           {filteredAndSortedPlayers.map(player => (
             <tr key={player.player_id} style={{ borderBottom: '1px solid #eee' }}>
               <td style={{ padding: '10px' }}>
-                {player.first_name} {player.last_name}
+                <Link
+                  href={`/league/${leagueId}/player/${player.player_id}?league_id=${leagueId}`}
+                  style={{ color: '#007bff', textDecoration: 'none', fontWeight: '500' }}
+                >
+                  {player.first_name} {player.last_name}
+                </Link>
               </td>
               <td style={{ padding: '10px' }}>{player.player_position}</td>
               <td style={{ padding: '10px' }}>{player.nfl_team || 'N/A'}</td>

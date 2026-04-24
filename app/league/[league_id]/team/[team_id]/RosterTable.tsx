@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 
 interface Player {
   player_id: number
@@ -155,7 +156,12 @@ export default function RosterTable({ rosters, isOwner, teamId, leagueId, player
               <tr key={roster.roster_id} style={{ borderBottom: '1px solid #eee' }}>
                 {isStartingLineup && <td style={{ padding: '10px', fontWeight: 'bold' }}>{row.slot}</td>}
                 <td style={{ padding: '10px' }}>
-                  {roster.players.first_name} {roster.players.last_name}
+                  <Link
+                    href={`/league/${leagueId}/player/${roster.players.player_id}?league_id=${leagueId}`}
+                    style={{ color: '#007bff', textDecoration: 'none', fontWeight: '500' }}
+                  >
+                    {roster.players.first_name} {roster.players.last_name}
+                  </Link>
                 </td>
                 <td style={{ padding: '10px' }}>{roster.players.player_position}</td>
                 <td style={{ padding: '10px' }}>{roster.players.nfl_team || 'N/A'}</td>
