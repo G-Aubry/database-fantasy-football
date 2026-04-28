@@ -9,7 +9,6 @@ This repository contains the code for a fantasy football app. There is a user lo
 You can access the live app through this link. The database isn't guranteed to be running at the time, which could lead to signin not working.
 
 [https://my-fantasy-league.vercel.app/](url)
-<img width="1053" height="123" alt="image" src="https://github.com/user-attachments/assets/f7b05541-fa7d-4417-9a9f-364a11908a7d" />
 
 
 ## Setting Up Schema
