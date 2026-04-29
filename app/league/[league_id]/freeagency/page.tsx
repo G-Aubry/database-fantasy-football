@@ -75,7 +75,7 @@ export default async function FreeAgencyPage({ params }: Props) {
         ← Back to League
       </Link>
 
-      <h1>Free Agency</h1>
+      <h1 style={{ fontSize: '3rem'}}>Free Agency</h1>
       <p style={{ color: '#666', marginBottom: '30px' }}>
         Add available players to your team. 
         {league.max_roster_size && ` (Max Roster Size: ${league.max_roster_size})`}

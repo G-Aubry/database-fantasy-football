@@ -51,14 +51,14 @@ export default function EditTeamName({
   return (
     <div>
       {isEditing ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <input
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
             style={{ fontSize: '2rem', fontWeight: 'bold' }}
           />
-          <button onClick={handleSave} style={{ padding: '8px 12px' }}>
+          <button onClick={handleSave} style={{ padding: '8px 12px', backgroundColor: '#065700' }}>
             Save
           </button>
           <button
@@ -67,16 +67,16 @@ export default function EditTeamName({
               setName(initialTeamName)
               setError('')
             }}
-            style={{ padding: '8px 12px' }}
+            style={{ padding: '8px 12px', backgroundColor: '#ff0000' }}
           >
             Cancel
           </button>
         </div>
       ) : (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <h1>{name}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+          <h1 style={{ fontSize: '2.5rem'}}>{name}</h1>
           {isOwner && (
-            <button onClick={() => setIsEditing(true)} style={{ padding: '8px 12px' }}>
+            <button onClick={() => setIsEditing(true)} style={{ padding: '8px 12px', backgroundColor: '#e1e1e1'}}>
               Edit Name
             </button>
           )}

@@ -70,7 +70,7 @@ export default async function LeaguePage({ params }: Props) {
         ← Back to Leagues
       </Link>
 
-      <h1>{league.league_name}</h1>
+      <h1 style={{ fontSize: '2.5rem'}}>{league.league_name}</h1>
       <div style={{ marginBottom: '30px', color: '#666' }}>
         <p><strong>Scoring Type:</strong> {league.scoring_type}</p>
         <p><strong>Max Teams:</strong> {league.max_teams}</p>

@@ -49,7 +49,7 @@ export default function Home() {
   if (status === 'unauthenticated') {
     return (
       <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
-        <h1>🏆 Fantasy League</h1>
+        <h1 style={{ fontSize: '3rem'}}>🏆 Fantasy League</h1>
         <p>Welcome! Please log in or create an account to get started.</p>
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
           <Link 
@@ -84,7 +84,7 @@ export default function Home() {
   return (
     <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1>🏆 Fantasy League Home</h1>
+        <h1 style={{ fontSize: '2.5rem'}}>🏆 Fantasy League Home</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <span>Welcome, {session?.user?.name}!</span>
           <button
