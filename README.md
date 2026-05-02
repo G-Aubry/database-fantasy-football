@@ -105,6 +105,8 @@ Use the following accounts to test the app:
 - MySQL
 - NextAuth
 - Tailwind CSS
+- Vercel
+- Aiven
 
 ## License
 
