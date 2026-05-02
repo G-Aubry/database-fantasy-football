@@ -104,7 +104,6 @@ Use the following accounts to test the app:
 - Prisma
 - MySQL
 - NextAuth
-- Tailwind CSS
 - Vercel
 - Aiven
 
