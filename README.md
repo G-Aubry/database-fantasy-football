@@ -11,9 +11,26 @@ You can access the live app through this link. The database isn't guranteed to b
 https://my-fantasy-league.vercel.app/
 
 
-## Setting Up Schema
+## Setting Up Database
 
-
+### Setting Up Schema
+1. Create a '.env' file in the project root
+2. Add your MySQL connection string to the .env file
+   (This is an exampe of set up, for it to work, replace with your relevant information)
+   '''env
+   DATABASE_URL="mySQL://USER:PASSWORD@HOST:PORT/DATABASE
+   '''
+3. Push the database schema to your MySQL and generate the Prisma client
+   '''bash
+   npx prisma db push
+   npx prisma generate
+   '''
+### Importing Data
+Data is located in the prisma/data directory
+1. Run the prisma command to use seed to import the data from the csv files
+'''
+npx prisma db seed
+'''
 
 ## Default Test Users
 ### Test Users
