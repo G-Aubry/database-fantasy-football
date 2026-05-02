@@ -1,41 +1,111 @@
 # Fantasy Football App
 
-## Description
+## Project Description
 
-This repository contains the code for a fantasy football app. There is a user login/sign up screen to start. Selecting remember me extends the session to 30 idle days before expiring the session, while not having it selected has a 1 hour idle timeout that is refreshed every 15 minutes. As a user, you can view and join already existing leagues or create your own. Creating a league has the options of a league name, max teams to allow (2-16), max roster size (1-30), and a scoring type. The 3 scoring types are standard, PPR, and Half PPR. Within the league, you can view the free agency table, which allows users to add players to their team that are not on another team yet. Free agency has postion filters, sorting prompts, and a name search to find players better. Also within the league screen is the ability to join the league by creating a team. Team creation prompts you to enter a team name and then it brings you to the lineup screen, where you can also edit your team name from. You can fill out your roster by adding free agents. Each player has points based on the league's scoring type. On your lineup screen, you can assign starters or bench players. The starting lineup is restricted to 1 QB, 2 HB, 2 WR, 1 TE, 1 RB/WR/TE, 1 DEF, and 1 K. The team view screen in the league shows the combined points for your starting lineup. In the roster view or free agency page, you can also click on a players name which will bring you to that players stat page. This page shows all the stats that a player has to better view performance and a points per week calculation, with a season total presented at the bottom.
+This repository contains a fantasy football web application built with Next.js and Prisma. Users can sign up, log in, create or join leagues, manage rosters, and view player statistics. The app supports multiple scoring modes (Standard, PPR, and Half PPR), and includes free agency management, player search and filtering, lineup rules, and team scoring.
 
-## Set Up
+## Features
 
-You can access the live app through this link. The database isn't guranteed to be running at the time, which could lead to signin not working.
+- User authentication with login/signup
+- Remember-me functionality with extended session duration
+- League creation and league joining
+- Free agency table with position filters and search
+- Roster management with starter/bench assignment
+- Lineup validation rules for fantasy positions
+- Player detail pages with weekly stats and point calculations
+- MySQL + Prisma database integration with CSV seed data
+
+## Live Demo
+
+The live deployment is available at:
 
 https://my-fantasy-league.vercel.app/
 
+> Note: The demo may not always be available if the database or hosting instance is not running.
 
-## Setting Up Database
+## How to Run the App
 
-### Setting Up Schema
-1. Create a '.env' file in the project root
-2. Add your MySQL connection string to the .env file
-   (This is an exampe of set up, for it to work, replace with your relevant information)
-   '''env
-   DATABASE_URL="mySQL://USER:PASSWORD@HOST:PORT/DATABASE
-   '''
-3. Push the database schema to your MySQL and generate the Prisma client
-   '''bash
-   npx prisma db push
-   npx prisma generate
-   '''
-### Importing Data
-Data is located in the prisma/data directory
-1. Run the prisma command to use seed to import the data from the csv files
-'''
+1. Clone the repository:
+
+```bash
+git clone https://github.com/G-Aubry/database-fantasy-football.git
+cd database-fantasy-football
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up the database (see Database Setup section below).
+
+4. Run the development server:
+
+```bash
+npm run dev
+```
+
+5. Open the app in your browser:
+
+```text
+http://localhost:3000
+```
+
+## Database Setup
+
+### Schema Setup
+
+Create a `.env` file in the project root with your MySQL connection string:
+
+```env
+DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DATABASE"
+```
+
+Then run:
+
+```bash
+npx prisma db push
+npx prisma generate
+```
+
+### Seed Data
+
+The seed data is stored in `prisma/data` as CSV files. To import the seed data, run:
+
+```bash
 npx prisma db seed
-'''
+```
+
+The seed script will load data from the following CSV files:
+
+- `prisma/data/League.csv`
+- `prisma/data/LeaguePlayerStats.csv`
+- `prisma/data/PlayerStats.csv`
+- `prisma/data/Players.csv`
+- `prisma/data/Rosters.csv`
+- `prisma/data/Teams.csv`
+- `prisma/data/Users.csv`
 
 ## Default Test Users
-### Test Users
-Username: Test1
-Password: TrustInMe
 
-Username: Test2
-Password: AnotherPassToForg3t
+Use the following accounts to test the app:
+
+- **Username:** Test1
+  **Password:** TrustInMe
+
+- **Username:** Test2
+  **Password:** AnotherPassToForg3t
+
+## Tech Stack
+
+- Next.js
+- React
+- Prisma
+- MySQL
+- NextAuth
+- Tailwind CSS
+
+## License
+
+This project is licensed under the Apache License 2.0. See the `LICENSE` file for details.
