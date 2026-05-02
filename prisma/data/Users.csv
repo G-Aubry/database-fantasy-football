@@ -1,0 +1,8 @@
+"user_id";"username";"password_hash";"email"
+1;"CommishGrant";"$2b$12$e7.V1pY7rA5G5.W5/X5vO.aP2n9.yR7m6L4K3j2i1h0g9f8e7d6c";"$1b$grant_admin@example.com"
+2;"TouchdownTerry";"$2b$12$K.lP9vR8sT7uU6vV5wW4xX3yY2zZ1aA0bB9cC8dD7eE6fF5gG4hH";"$2b$terry_t@example.com"
+3;"FantasyKing99";"$2b$12$Z1xY2wX3vV4uU5tT6sS7rR8qQ9pP0oO1nN2mM3lL4kK5jJ6iI7hH";"$3c$fk99@example.com"
+4;"GridironGal";"$2b$12$A1bB2cC3dD4eE5fF6gG7hH8iI9jJ0kK1lL2mM3nN4oO5pP6qQ7rR8sS";"$4d$ggal@example.com"
+5;"BlitzBot";"$2b$12$S1rR2qQ3pP4oO5nN6mM7lL8kK9jJ0iI1hH2gG3fF4eE5dD6cC7bB8aA";"$5e$bot_user@example.com"
+6;"Test1";"$2a$10$BpA0LVyND9N6KzRaHB8o9e2wxpwWJ3.MO6/exXSLFydH8TbhDPf0i";"testing@gmail.com"
+7;"Test2";"$2a$10$0HhFCDInxSMs0QJJumAtb.9n/1KgtNv8I6U8k1iSl5DjGtb1sHb5S";"testing2@gmail.com"
