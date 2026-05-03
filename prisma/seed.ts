@@ -51,6 +51,7 @@ async function main() {
   for (const row of usersData) {
     await prisma.users.create({
       data: {
+        user_id: parseInt(row.user_id),
         username: row.username,
         password_hash: row.password_hash,
         email: row.email,
@@ -64,10 +65,11 @@ async function main() {
   for (const row of leaguesData) {
     await prisma.league.create({
       data: {
+        league_id: parseInt(row.league_id),
         league_name: row.league_name,
         max_teams: parseInt(row.max_teams) || 12,
         max_roster_size: parseInt(row.max_roster_size) || 15,
-        scoring_type: row.scoring_type as any,
+        scoring_type: row.scoring_type === 'Half PPR' ? 'Half_PPR' : row.scoring_type as any,
       },
     });
   }
@@ -78,6 +80,7 @@ async function main() {
   for (const row of playersData) {
     await prisma.players.create({
       data: {
+        player_id: parseInt(row.player_id),
         first_name: row.first_name,
         last_name: row.last_name,
         player_position: row.player_position as any,
@@ -93,6 +96,7 @@ async function main() {
   for (const row of teamsData) {
     await prisma.teams.create({
       data: {
+        team_id: parseInt(row.team_id),
         league_id: row.league_id ? parseInt(row.league_id) : null,
         team_name: row.team_name,
         owner_id: row.owner_id ? parseInt(row.owner_id) : null,
@@ -106,6 +110,7 @@ async function main() {
   for (const row of rostersData) {
     await prisma.rosters.create({
       data: {
+        roster_id: parseInt(row.roster_id),
         team_id: parseInt(row.team_id),
         player_id: parseInt(row.player_id),
         league_id: parseInt(row.league_id),
