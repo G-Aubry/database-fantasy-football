@@ -144,7 +144,6 @@ export default function PlayerStatPage() {
         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
           <span><strong>Position:</strong> {player.player_position}</span>
           <span><strong>NFL Team:</strong> {player.nfl_team || 'N/A'}</span>
-          <span><strong>Total Points (Season):</strong> {player.total_points?.toFixed(2) || '0.00'}</span>
           <span style={{ color: '#28a745', fontWeight: 'bold' }}>
             <strong>Points in League:</strong> {totalLeaguePoints.toFixed(2)}
           </span>
