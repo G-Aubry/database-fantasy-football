@@ -25,7 +25,7 @@ function parseCSV<T>(filePath: string): Promise<T[]> {
   return new Promise((resolve, reject) => {
     const results: T[] = [];
     fs.createReadStream(filePath)
-      .pipe(csv())
+      .pipe(csv({ separator: ';' }))
       .on('data', (data) => results.push(data))
       .on('end', () => resolve(results))
       .on('error', (error) => reject(error));
@@ -35,80 +35,85 @@ function parseCSV<T>(filePath: string): Promise<T[]> {
 async function main() {
   console.log('Starting to seed...');
 
+  // Clear existing data to avoid conflicts
+  console.log('Clearing existing data...');
+  await prisma.league_player_score.deleteMany({});
+  await prisma.player_stats.deleteMany({});
+  await prisma.rosters.deleteMany({});
+  await prisma.teams.deleteMany({});
+  await prisma.players.deleteMany({});
+  await prisma.league.deleteMany({});
+  await prisma.users.deleteMany({});
+  console.log('Existing data cleared');
+
   // === 1. SEED USERS ===
   const usersData = await parseCSV<any>('./prisma/data/Users.csv');
   for (const row of usersData) {
     await prisma.users.create({
       data: {
-        user_id: parseInt(row.user_id),
         username: row.username,
         password_hash: row.password_hash,
         email: row.email,
       },
     });
   }
-  console.log('Users seeded');
+  console.log(`Users seeded: ${usersData.length} records`);
 
   // === 2. SEED LEAGUES ===
   const leaguesData = await parseCSV<any>('./prisma/data/League.csv');
   for (const row of leaguesData) {
     await prisma.league.create({
       data: {
-        league_id: parseInt(row.league_id),
         league_name: row.league_name,
-        max_teams: parseInt(row.max_teams),
-        max_roster_size: parseInt(row.max_roster_size),
-        scoring_type: row.scoring_type as any, // Assumes value matches enum
+        max_teams: parseInt(row.max_teams) || 12,
+        max_roster_size: parseInt(row.max_roster_size) || 15,
+        scoring_type: row.scoring_type as any,
       },
     });
   }
-  console.log('Leagues seeded');
+  console.log(`Leagues seeded: ${leaguesData.length} records`);
 
   // === 3. SEED PLAYERS ===
   const playersData = await parseCSV<any>('./prisma/data/Players.csv');
   for (const row of playersData) {
     await prisma.players.create({
       data: {
-        player_id: parseInt(row.player_id),
         first_name: row.first_name,
         last_name: row.last_name,
-        player_position: row.player_position as any, // Assumes value matches enum
+        player_position: row.player_position as any,
         nfl_team: row.nfl_team || null,
-        total_points: parseFloat(row.total_points),
-        is_injured: row.is_injured === 'true' || row.is_injured === '1',
+        total_points: parseFloat(row.total_points) || 0,
       },
     });
   }
-  console.log('Players seeded');
+  console.log(`Players seeded: ${playersData.length} records`);
 
   // === 4. SEED TEAMS ===
   const teamsData = await parseCSV<any>('./prisma/data/Teams.csv');
   for (const row of teamsData) {
     await prisma.teams.create({
       data: {
-        team_id: parseInt(row.team_id),
         league_id: row.league_id ? parseInt(row.league_id) : null,
         team_name: row.team_name,
         owner_id: row.owner_id ? parseInt(row.owner_id) : null,
       },
     });
   }
-  console.log('Teams seeded');
+  console.log(`Teams seeded: ${teamsData.length} records`);
 
   // === 5. SEED ROSTERS ===
   const rostersData = await parseCSV<any>('./prisma/data/Rosters.csv');
   for (const row of rostersData) {
     await prisma.rosters.create({
       data: {
-        roster_id: parseInt(row.roster_id),
         team_id: parseInt(row.team_id),
         player_id: parseInt(row.player_id),
         league_id: parseInt(row.league_id),
-        status: row.status as any, // Assumes value matches enum
+        status: row.status as any,
       },
     });
   }
-  console.log('Rosters seeded');
+  console.log(`Rosters seeded: ${rostersData.length} records`);
 
   // === 6. SEED PLAYER STATS ===
   const playerStatsData = await parseCSV<any>('./prisma/data/PlayerStats.csv');
@@ -132,23 +137,27 @@ async function main() {
       },
     });
   }
-  console.log('Player Stats seeded');
+  console.log(`Player Stats seeded: ${playerStatsData.length} records`);
 
-  // === 7. SEED LEAGUE PLAYER SCORES ===
-  const scoresData = await parseCSV<any>('./prisma/data/LeaguePlayerStats.csv');
-  for (const row of scoresData) {
-    await prisma.league_player_score.create({
-      data: {
-        league_id: parseInt(row.league_id),
-        player_id: parseInt(row.player_id),
-        week_number: parseInt(row.week_number),
-        calculated_points: parseFloat(row.calculated_points),
-      },
-    });
+  // === 7. SEED LEAGUE PLAYER SCORES (from CSV if it exists) ===
+  try {
+    const scoresData = await parseCSV<any>('./prisma/data/LeaguePlayerStats.csv');
+    for (const row of scoresData) {
+      await prisma.league_player_score.create({
+        data: {
+          league_id: parseInt(row.league_id),
+          player_id: parseInt(row.player_id),
+          week_number: parseInt(row.week_number),
+          calculated_points: parseFloat(row.calculated_points) || 0,
+        },
+      });
+    }
+    console.log(`League Player Scores seeded: ${scoresData.length} records`);
+  } catch (error) {
+    console.log('LeaguePlayerStats.csv not found or empty - skipping');
   }
-  console.log('League Player Scores seeded');
 
-  console.log('Seeding finished successfully.');
+  console.log('✅ Seeding finished successfully.');
 }
 
 main()
