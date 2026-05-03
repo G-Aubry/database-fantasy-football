@@ -16,7 +16,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { createLeague } from './actions'
 
 interface CreateLeagueModalProps {
@@ -26,19 +26,19 @@ interface CreateLeagueModalProps {
 export default function CreateLeagueModal({ onLeagueCreated }: CreateLeagueModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [error, setError] = useState('')
+  const [isPending, startTransition] = useTransition()
 
-  const handleSubmit = async (formData: FormData) => {
-    try {
-      setError('')
-      await createLeague(formData)
-      setIsOpen(false)
-      onLeagueCreated?.()
-    } catch (err: any) {
-      if (err?.digest === 'NEXT_REDIRECT') {
-        return
+  const handleSubmit = (formData: FormData) => {
+    startTransition(async () => {
+      try {
+        setError('')
+        await createLeague(formData)
+        setIsOpen(false)
+        onLeagueCreated?.()
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to create league')
       }
-      setError(err instanceof Error ? err.message : 'Failed to create league')
-    }
+    })
   }
 
   return (
