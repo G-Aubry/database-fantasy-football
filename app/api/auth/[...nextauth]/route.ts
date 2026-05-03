@@ -57,6 +57,11 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
           };
         } catch (error: any) {
+          // Re-throw credential errors as-is
+          if (error.message === 'Invalid credentials') {
+            throw error;
+          }
+          // Only catch database/service errors
           console.error("AUTH_DATABASE_ERROR:", error.message);
           throw new Error('Authentication service is currently unavailable.');
         }
