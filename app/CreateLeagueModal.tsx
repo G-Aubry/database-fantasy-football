@@ -33,9 +33,10 @@ export default function CreateLeagueModal({ onLeagueCreated }: CreateLeagueModal
       try {
         setError('')
         await createLeague(formData)
-        setIsOpen(false)
-        onLeagueCreated?.()
-      } catch (err) {
+      } catch (err: any) {
+        if (err?.digest === 'NEXT_REDIRECT' || err?.message?.includes('REDIRECT')) {
+          throw err
+        }
         setError(err instanceof Error ? err.message : 'Failed to create league')
       }
     })
