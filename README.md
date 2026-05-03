@@ -59,7 +59,13 @@ http://localhost:3000
 Create a `.env` file in the project root with your MySQL connection string:
 
 ```env
+# Database connection
 DATABASE_URL="mysql://USER:PASSWORD@HOST:PORT/DATABASE"
+
+# NextAuth Configuration (Required for local development)
+NEXTAUTH_URL="http://localhost:3000"
+# Can be anything
+NEXTAUTH_SECRET="your_random_secret_string_here"
 ```
 
 Then run:
