@@ -100,7 +100,7 @@ export default function Home() {
   return (
     <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '2.5rem'}}>👑 Triple 👑 Fantasy 👑 Home</h1>
+        <h1 style={{ fontSize: '2.5rem'}}>👑 Triple 👑 Fantasy 👑 </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <span>Welcome, {session?.user?.name}!</span>
           <button
