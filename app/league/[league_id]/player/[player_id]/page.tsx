@@ -138,7 +138,7 @@ export default function PlayerStatPage() {
 
       {/* Player Header */}
       <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '30px' }}>
-        <h1 style={{ margin: '0 0 10px 0' }}>
+        <h1 style={{ margin: '0 0 10px 0', fontSize: '2rem' }}>
           {player.first_name} {player.last_name}
         </h1>
         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
